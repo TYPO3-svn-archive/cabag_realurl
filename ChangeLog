@@ -1,0 +1,81 @@
+2011-10-10 Sonja Scholz <ss@cabag.ch>
+	* Version 0.2.0
+	* fresh upload to TER
+
+2011-10-10 Sonja Scholz <ss@cabag.ch>
+	* Version 0.1.9
+	* fixed bug in 1.10.1/class.ux_tx_realurl.php - function decodeSpURL - save url to errorlog if an error occurs - thanks to Marc Bastian Heinrichs <heinrichs@steuerungb.de>
+
+2011-06-14 Sonja Scholz <ss@cabag.ch>
+	* Version 0.1.8
+	* changed folder 1.10.1/class.ux_tx_realurl_modfunc1.php - changed delete and hidden button creation
+
+2011-05-13 Nils Blattner <nb@cabag.ch>
+	* Version 0.1.7
+	* adapted the constant TX_REALURL_PAGE_ID for versions 1.9.3, 1.8.1, 1.7.0, 1.5.3
+
+2011-05-12 Nils Blattner <nb@cabag.ch>
+	* Version 0.1.6
+	* changed 1.10.1/ux_tx_realurl->decodeSpURL - defined TX_REALURL_PAGE_ID to hold the page id that realurl found
+
+2011-04-07 Sonja Scholz <ss@cabag.ch>
+	* Version 0.1.5
+	* changed 1.10.1/ux_tx_realurl.php - added function decodeSpURL_getSequence - fix bug that www.domain.com/zzz leads to the startpage instead of the notfound page as soon as valueDefault isset for language
+
+2011-02-11 Nils Blattner <nb@cabag.ch>
+	* Version 0.1.4
+	* changed 1.10.1/ux_tx_realurl_advanced - made sure findIDByURL is only called with an array
+
+2011-01-31 Sonja Scholz  <ss@cabag.ch>
+	* Version 0.1.3
+	* added folder for version 1.10.1
+	* changed 1.10.1/ux_tx_realurl - changed function decodeSpURL_decodeFileName_checkHtmlSuffix use rawurelencode instead of urlencode
+	* changed 1.10.1/ux_tx_realurl_advanced - changed function findIDByURL - updated to original realurl code where needed, changed function pagePathtoID - updated to original realurl code where needed
+
+2010-11-23 Dimitri Koenig <dk@cabag.ch>
+	* Version 0.1.2
+	* fixed bug in 1.9.3/ux_tx_realurl_advanced.php - pagePathtoID() - copy_pathParts must be an array so that the next query will find something in pagepath cache table
+
+2010-07-15 Sonja Scholz  <ss@cabag.ch>
+	* Version 0.1.1
+	* fixed bug in 1.9.3/ux_tx_realurl.php - decodeSpURL_doDecode() - fix error so urls with parameter couldn't be decoded
+
+2010-07-14 Sonja Scholz  <ss@cabag.ch>
+	* Version 0.1.0
+	* added new folder for realurl version 1.9.3
+
+2010-04-27 Sonja Scholz  <ss@cabag.ch>
+	* Version 0.0.9
+	* added new folder for realurl version 1.8.1
+
+2010-04-07 Sonja Scholz  <ss@cabag.ch>
+	* Version 0.0.8
+	* fixed bug in realurl xclass ux_tx_realurl in 1.7.0 folder - don't realurl the fileadmin file links again
+
+2010-01-27 Sonja Scholz  <ss@cabag.ch>
+	* Version 0.0.7
+	* removed display_errors in ext_localconf.php
+
+2009-12-16 Sonja Scholz  <ss@cabag.ch>
+	* Version 0.0.6
+	* fixed bug in ux_tx_realurl xclass to select the redirects with the correct sorting
+
+2009-11-26 Sonja Scholz  <ss@cabag.ch>
+	* Version 0.0.5
+	* added function decodeSpURL_doDecode to xclass of realurl class - bug fix for "keyword not found as a postVarSet as expected"
+
+2009-11-19 Sonja Scholz  <ss@cabag.ch>
+	* Version 0.0.4
+	* added locallang translations for German
+
+2009-11-19 Sonja Scholz  <ss@cabag.ch>
+	* Version 0.0.3
+	* added xclasses for realurl version 1.7.0
+
+2009-11-19 Sonja Scholz  <ss@cabag.ch>
+	* Version 0.0.2
+	* added huge improvements for the BE module of realurl and the redirect management
+
+2009-11-05 Sonja Scholz  <ss@cabag.ch>
+	* Version 0.0.1
+	* initial version with xclasses for realurl

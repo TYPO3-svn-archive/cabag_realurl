@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<description>Database labels</description>
+		<type>database</type>
+		<csh_table></csh_table>
+		<labelContext type="array">
+		</labelContext>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="tx_realurl_redirects">RealURL Redirects</label>
+			<label index="tx_realurl_redirects.url_hash">URL Hash</label>
+			<label index="tx_realurl_redirects.url">URL</label>
+			<label index="tx_realurl_redirects.destination">Redirect to</label>
+			<label index="tx_realurl_redirects.destination_typolink">Define "redirect to" with TYPO3 link function instead</label>
+			<label index="tx_realurl_redirects.last_referer">Last referer</label>
+			<label index="tx_realurl_redirects.counter">Counter</label>
+			<label index="tx_realurl_redirects.has_moved">Send "301 Moved permanently" header</label>
+			<label index="tx_realurl_redirects.domain">Redirect for the following domains</label>
+			<label index="tx_realurl_redirects.url_regular_expression">Use regular expression for URL instead</label>
+			<label index="tx_realurl_redirects.tabGeneral"><![CDATA[General & statistic]]></label>
+			<label index="tx_realurl_redirects.tabSourceURL">Source URL</label>
+			<label index="tx_realurl_redirects.tabTargetURL">Target URL</label>
+			<label index="tx_realurl_redirects.last_time">Last time</label>
+		</languageKey>
+		<languageKey index="de" type="array">
+			<label index="tx_realurl_redirects">RealURL Weiterleitungen</label>
+			<label index="tx_realurl_redirects.url_hash">URL Hash</label>
+			<label index="tx_realurl_redirects.url">URL</label>
+			<label index="tx_realurl_redirects.destination">Weiterleiten nach Ziel</label>
+			<label index="tx_realurl_redirects.destination_typolink">Ziel stattdessen mit TYPO3 Linkfunktion definieren (empfohlen)</label>
+			<label index="tx_realurl_redirects.last_referer">Letzter Aufruf kam von</label>
+			<label index="tx_realurl_redirects.counter">Zähler</label>
+			<label index="tx_realurl_redirects.has_moved">Permanente Weiterleitung</label>
+			<label index="tx_realurl_redirects.domain">Nur für die folgenden Domains weiterleiten</label>
+			<label index="tx_realurl_redirects.url_regular_expression">Stattdessen regular expression verwenden</label>
+			<label index="tx_realurl_redirects.tabGeneral"><![CDATA[Allgemein & Statistik]]></label>
+			<label index="tx_realurl_redirects.tabSourceURL">Quell URL</label>
+			<label index="tx_realurl_redirects.tabTargetURL">Ziel URL</label>
+			<label index="tx_realurl_redirects.last_time">Letzter Aufruf</label>
+		</languageKey>
+	</data>
+</T3locallang>

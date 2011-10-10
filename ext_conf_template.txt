@@ -1,0 +1,15 @@
+
+  # cat=basic//10; type=boolean; label= Enable realurl xclass: Class is ext/realurl/class.tx_realurl.php. To enable this xclass, set the checkbox to 1.
+enableRealUrlXclass = 1
+
+ # cat=basic//10; type=boolean; label=Activate advanced RealURL redirects: Automatically redirects to the page where the record with the keyword is located. The following fields have to be filled out!
+enableAdvancedRealURLRedirect = 0
+
+ # cat=basic//10; type=string; label=Advanced RealURL redirects - table: DB name of the table to search in for the redirect keyword
+advancedRealURLRedirectTable = pages
+
+ # cat=basic//10; type=string; label=Advanced RealURL redirects - search field in the table: DB name of the field in the table to search in for the redirect keyword
+advancedRealURLRedirectField = keywords
+
+ # cat=basic//10; type=string; label=Advanced RealURL redirects - search PID field in the table: DB name of the PID field in the table to search in for the redirect keyword (for example uid for pages or pid for other records)
+advancedRealURLRedirectPIDField = uid
