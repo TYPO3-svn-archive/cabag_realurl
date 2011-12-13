@@ -73,23 +73,46 @@ class ux_tx_realurl extends tx_realurl{
 			
 			Attention: if there are two redirects for the same URIpath the redirect for the current domain will be used although there is one with no domain relation
 		*/
-		$redirect_rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-			'DISTINCT tx_realurl_redirects.*, sys_domain.uid as sys_domain_uid, sys_domain.domainName as sys_domain_domainName', 
-			"tx_realurl_redirects 
-				LEFT JOIN tx_realurl_redirects_sys_domain_mm ON (
-					tx_realurl_redirects.uid = tx_realurl_redirects_sys_domain_mm.uid_local)
-				LEFT JOIN sys_domain ON (
-					tx_realurl_redirects_sys_domain_mm.uid_foreign = sys_domain.uid
-					AND sys_domain.domainName = '".t3lib_div::getIndpEnv('HTTP_HOST')."') ", 
-			"(
-				tx_realurl_redirects.url = '" .$speakingURIpath."' 
-				OR tx_realurl_redirects.url_regular_expression != '' 
-			)
-				AND tx_realurl_redirects.deleted = 0 
-				AND tx_realurl_redirects.hidden = 0 ",
-			'',
-			'sys_domain_domainName DESC, tx_realurl_redirects.url DESC, tx_realurl_redirects.url_regular_expression DESC'
+		
+		/* CHECK SERVER OS */
+		if(strpos($_SERVER['OS'],'Windows') !== false) {
+			$redirect_rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+				' tx_realurl_redirects.*, sys_domain.uid as sys_domain_uid, sys_domain.domainName as sys_domain_domainName', 
+				"tx_realurl_redirects 
+					LEFT JOIN tx_realurl_redirects_sys_domain_mm ON 
+						tx_realurl_redirects.uid = tx_realurl_redirects_sys_domain_mm.uid_local
+					LEFT JOIN sys_domain ON
+						tx_realurl_redirects_sys_domain_mm.uid_foreign = sys_domain.uid
+						 ", 
+				"(
+					tx_realurl_redirects.url LIKE '" .$speakingURIpath."' 
+					OR tx_realurl_redirects.url_regular_expression NOT LIKE '' 
+				)
+					AND tx_realurl_redirects.deleted = 0 
+					AND tx_realurl_redirects.hidden = 0 
+					AND sys_domain.domainName = ".$GLOBALS['TYPO3_DB']->fullQuoteStr(t3lib_div::getIndpEnv('HTTP_HOST'), 'sys_domain'),
+				'',
+				'sys_domain_domainName DESC'
 			);
+		} else {
+			$redirect_rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+				'DISTINCT tx_realurl_redirects.*, sys_domain.uid as sys_domain_uid, sys_domain.domainName as sys_domain_domainName', 
+				"tx_realurl_redirects 
+					LEFT JOIN tx_realurl_redirects_sys_domain_mm ON (
+						tx_realurl_redirects.uid = tx_realurl_redirects_sys_domain_mm.uid_local)
+					LEFT JOIN sys_domain ON (
+						tx_realurl_redirects_sys_domain_mm.uid_foreign = sys_domain.uid
+						AND sys_domain.domainName = '".t3lib_div::getIndpEnv('HTTP_HOST')."') ", 
+				"(
+					tx_realurl_redirects.url = '" .$speakingURIpath."' 
+					OR tx_realurl_redirects.url_regular_expression != '' 
+				)
+					AND tx_realurl_redirects.deleted = 0 
+					AND tx_realurl_redirects.hidden = 0 ",
+				'',
+				'sys_domain_domainName DESC, tx_realurl_redirects.url DESC, tx_realurl_redirects.url_regular_expression DESC'
+				);
+		}
 		
 		if(is_array($redirect_rows) && !empty($redirect_rows)) {
 			foreach ($redirect_rows as $redirect_row) {
@@ -549,6 +572,39 @@ class ux_tx_realurl extends tx_realurl{
 		}
 
 		return $GET_string;
+	}
+	
+	/**
+	 * Looks up a alias string in lookup-table based on input ID value (integer)
+	 * (The lookup table for id<->alias is meant to contain UNIQUE alias strings for id integers)
+	 *
+	 * @param	array		Configuration array
+	 * @param	string		ID value to convert to alias value
+	 * @param	integer		sys_language_uid to use for lookup
+	 * @param	string		Optional alias value to limit search to
+	 * @return	string		Alias string. If none is found: false
+	 * @see lookUpTranslation(), lookUp_uniqAliasToId()
+	 */
+	protected function lookUp_idToUniqAlias($cfg, $idValue, $lang, $aliasValue = '') {
+
+		if(strpos($_SERVER['OS'],'Windows') !== false) {
+			// Look for an alias based on ID:
+			list($row) = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('value_alias', 'tx_realurl_uniqalias',
+					'value_id=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($idValue, 'tx_realurl_uniqalias') .
+					' AND field_alias LIKE ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($cfg['alias_field'], 'tx_realurl_uniqalias') .
+					' AND field_id=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($cfg['id_field'], 'tx_realurl_uniqalias') .
+					' AND tablename LIKE ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($cfg['table'], 'tx_realurl_uniqalias') .
+					' AND lang=' . intval($lang) .
+					' AND expire=0' .
+					($aliasValue ? ' AND value_alias=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($aliasValue, 'tx_realurl_uniqalias') : ''),
+					'', '', '1');
+			if (is_array($row)) {
+				return $row['value_alias'];
+			}
+			return null;
+		} else {
+			parent::lookUp_idToUniqAlias($cfg, $idValue, $lang, $aliasValue);
+		}
 	}
 }
 

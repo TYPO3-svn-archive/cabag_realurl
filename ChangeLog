@@ -1,3 +1,12 @@
+2011-11-28 Sonja Scholz <ss@cabag.ch>
+	* Version 0.2.2
+	* added modifications on Version 0.1.4 by Tizian Schmidlin:
+		* fixed some mysql fashioned things that do not work in mssql in tx_realurl.php and tx_realurl_advanced.php
+
+2011-10-20 Sonja Scholz <ss@cabag.ch>
+	* Version 0.2.1
+	* fixed bug in 1.10.1/class.ux_tx_realurl_advanced.php check correct extemconf var
+
 2011-10-10 Sonja Scholz <ss@cabag.ch>
 	* Version 0.2.0
 	* fresh upload to TER

@@ -52,10 +52,9 @@ class ux_tx_realurl_advanced extends tx_realurl_advanced {
 	 * @return	array		Info array, currently with "id" set to the ID.
 	 */
 	function findIDByURL(array &$urlParts) {
-		$tx_cabagpatch_extconf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['cabag_realurl']);
+		$tx_cabagrealurl_extconf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['cabag_realurl']);
 		// Does only anything if all needed information from extension manager are available!
-		if($tx_cabagrealurl_extconf['enableAdvancedRealURLRedirect'] && $tx_cabagpatch_extconf['advancedRealURLRedirectTable'] && $tx_cabagpatch_extconf['advancedRealURLRedirectField'] && $tx_cabagpatch_extconf['advancedRealURLRedirectPIDField']) {
-		
+		if(!empty($tx_cabagrealurl_extconf['enableAdvancedRealURLRedirect']) && !empty($tx_cabagrealurl_extconf['advancedRealURLRedirectTable']) && !empty($tx_cabagrealurl_extconf['advancedRealURLRedirectField']) && !empty($tx_cabagrealurl_extconf['advancedRealURLRedirectPIDField'])) {
 			if(count($urlParts) == 1 || count($urlParts) == 2) {
 				if(count($urlParts) == 2) {
 					$searchString = urldecode($urlParts[0]).'/'.urldecode($urlParts[1]);
@@ -65,16 +64,16 @@ class ux_tx_realurl_advanced extends tx_realurl_advanced {
 				
 				// There is only one URL part - look for a record with this kurscode
 				$result = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-						$tx_cabagpatch_extconf['advancedRealURLRedirectTable'].'.*', 
-						$tx_cabagpatch_extconf['advancedRealURLRedirectTable'],
-						$tx_cabagpatch_extconf['advancedRealURLRedirectTable'].".".$tx_cabagpatch_extconf['advancedRealURLRedirectField']."=" . $GLOBALS['TYPO3_DB']->fullQuoteStr($searchString,$tx_cabagpatch_extconf['advancedRealURLRedirectTable'])."
-						 AND ".$tx_cabagpatch_extconf['advancedRealURLRedirectTable'].".deleted=0 AND ".$tx_cabagpatch_extconf['advancedRealURLRedirectTable'].".hidden=0 ");
+						$tx_cabagrealurl_extconf['advancedRealURLRedirectTable'].'.*', 
+						$tx_cabagrealurl_extconf['advancedRealURLRedirectTable'],
+						$tx_cabagrealurl_extconf['advancedRealURLRedirectTable'].".".$tx_cabagrealurl_extconf['advancedRealURLRedirectField']."=" . $GLOBALS['TYPO3_DB']->fullQuoteStr($searchString,$tx_cabagrealurl_extconf['advancedRealURLRedirectTable'])."
+						 AND ".$tx_cabagrealurl_extconf['advancedRealURLRedirectTable'].".deleted=0 AND ".$tx_cabagrealurl_extconf['advancedRealURLRedirectTable'].".hidden=0 ");
 	
 				if($GLOBALS['TYPO3_DB']->sql_num_rows($result) > 0) {
 					$record = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result);
 					
 					$id = 0;
-					$id = $record[$tx_cabagpatch_extconf['advancedRealURLRedirectPIDField']];
+					$id = $record[$tx_cabagrealurl_extconf['advancedRealURLRedirectPIDField']];
 					$GET_VARS = '';
 					
 					// Unset code - very important and needed - ask ss for questions
@@ -84,7 +83,7 @@ class ux_tx_realurl_advanced extends tx_realurl_advanced {
 					} else {
 						unset($urlParts[0]);
 					}
-					
+
 					return array(intval($id), $GET_VARS);
 				} else {
 					// There were no record found in the db - do the standart way
@@ -138,12 +137,22 @@ class ux_tx_realurl_advanced extends tx_realurl_advanced {
 			}
 			while (count($copy_pathParts)) {
 				// Using pathq1 index!
-				list($row) = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+				/* CHECK SERVER OS */
+				if(strpos($_SERVER['OS'],'Windows') !== false) {
+					list($row) = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 						'tx_realurl_pathcache.*', 'tx_realurl_pathcache,pages',
 						'tx_realurl_pathcache.page_id=pages.uid AND pages.deleted=0' .
 						' AND rootpage_id=' . intval($this->conf['rootpage_id']) .
 						' AND pagepath=' . $GLOBALS['TYPO3_DB']->fullQuoteStr(implode('/', $copy_pathParts), 'tx_realurl_pathcache'),
 						'', 'expire', '1');
+				} else {
+					list($row) = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+						'tx_realurl_pathcache.*', 'tx_realurl_pathcache,pages',
+						'tx_realurl_pathcache.page_id=pages.uid AND pages.deleted=0' .
+						' AND rootpage_id=' . intval($this->conf['rootpage_id']) .
+						' AND pagepath LIKE ' . $GLOBALS['TYPO3_DB']->fullQuoteStr(implode('/', $copy_pathParts), 'tx_realurl_pathcache'),
+						'', 'expire', '1');
+				}
 
 				// This lookup does not include language and MP var since those are supposed to be fully reflected in the built url!
 				if (is_array($row) || $this->conf['firstHitPathCache']) {
@@ -248,6 +257,63 @@ class ux_tx_realurl_advanced extends tx_realurl_advanced {
 
 		// Return found ID:
 		return array($id, $GET_VARS);
+	}
+	
+	/**
+	 * Adds a new entry to the path cache
+	 *
+	 * @param string $currentPagePath
+	 * @param string $pathCacheCondition
+	 * @param int $pageId
+	 * @param string $mpvar
+	 * @param int $langId
+	 * @return void
+	 */
+	protected function addNewPagePathEntry($currentPagePath, $pathCacheCondition, $pageId, $mpvar, $langId, $rootPageId) {
+		/* CHECK SERVER OS */
+		if(strpos($_SERVER['OS'],'Windows') !== false) {
+			$condition = $pathCacheCondition . ' AND pagepath LIKE ' .
+				$GLOBALS['TYPO3_DB']->fullQuoteStr($currentPagePath, 'tx_realurl_pathcache');
+			list($count) = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('COUNT(*) AS t',
+				'tx_realurl_pathcache', $condition);
+			if ($count['t'] == 0) {
+				$insertArray = array(
+					'page_id' => $pageId,
+					'language_id' => $langId,
+					'pagepath' => $currentPagePath,
+					'expire' => 0,
+					'rootpage_id' => $rootPageId,
+					'mpvar' => $mpvar
+				);
+				$GLOBALS['TYPO3_DB']->exec_INSERTquery('tx_realurl_pathcache', $insertArray);
+			}
+		} else {
+			parent::addNewPagePathEntry($currentPagePath, $pathCacheCondition, $pageId, $mpvar, $langId, $rootPageId);
+		}
+	}
+	
+	/**
+	 * Sets expiration time for the old path cache entries
+	 *
+	 * @param string $currentPagePath
+	 * @param string $pathCacheCondition
+	 * @return void
+	 */
+	protected function setExpirationOnOldPathCacheEntries($currentPagePath, $pathCacheCondition) {
+		/* CHECK SERVER OS */
+		if(strpos($_SERVER['OS'],'Windows') !== false) {
+			$expireDays = (isset($this->conf['expireDays']) ? $this->conf['expireDays'] : 60) * 24 * 3600;
+			$condition = $pathCacheCondition . ' AND expire=0 AND pagepath NOT LIKE ' .
+				$GLOBALS['TYPO3_DB']->fullQuoteStr($currentPagePath, 'tx_realurl_pathcache');
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_realurl_pathcache', $condition,
+				array(
+					'expire' => $this->makeExpirationTime($expireDays)
+				),
+				'expire'
+			);
+		} else {
+			parent::setExpirationOnOldPathCacheEntries($currentPagePath, $pathCacheCondition);
+		}
 	}
 }
 
